@@ -5,12 +5,17 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 
 namespace Domino
 {
     //новый движок
+    
     internal class Engine
     {
+        public bool firstTime = true;
+
+
         Random random = new Random();
         List<DiceModel> Dices = new List<DiceModel>
         {
@@ -49,20 +54,18 @@ namespace Domino
         public List<DiceModel> Bazar; 
         int playersCount; //количество игроков (для этого класса)
         public string gameBoard = string.Empty; //поле игры
-        
+
+        public int leftEnd;
+        public int rightEnd;
         public void Init(int PlayerCount)
         {
-            if (PlayerCount < 2 || PlayerCount > 4)
-            {
-                throw new Exception($"Недопустимое количество игроков: {PlayerCount}!");
-            }
+            if (PlayerCount < 2 || PlayerCount > 4) throw new Exception($"Недопустимое количество игроков: {PlayerCount}!");
             playersCount = PlayerCount;
             player= new Player[playersCount];
             for (int i = 0; i < PlayerCount; i++)
             {
                 player[i] = new Player();
             }
-            
         }
 
         public void GiveDices()
@@ -117,17 +120,45 @@ namespace Domino
 
         public void Pass(int index, int PlayerIndex, bool Left)
         {
+            
+
+            if (firstTime)
+            {
+                if (Left)
+                {
+                    gameBoard = player[PlayerIndex].PlayerDices[index].DiceStr + gameBoard;
+                    leftEnd = player[PlayerIndex].PlayerDices[index].Num1;
+                    rightEnd = player[PlayerIndex].PlayerDices[index].Num2;
+                    player[PlayerIndex].PlayerDices.RemoveAt(index);
+                }
+                else
+                {
+                    gameBoard = gameBoard + player[PlayerIndex].PlayerDices[index].DiceStr;
+                    leftEnd = player[PlayerIndex].PlayerDices[index].Num1;
+                    rightEnd = player[PlayerIndex].PlayerDices[index].Num2;
+                    player[PlayerIndex].PlayerDices.RemoveAt(index);
+                }
+                firstTime = false;
+                return;
+            } //первый ход в игре
+
+            if (!CheckMove(Left, player[PlayerIndex].PlayerDices[index])) throw new Exception("Вы не можете так сходить!");
+
+
             if(Left)
             {
+                
                 gameBoard = player[PlayerIndex].PlayerDices[index].DiceStr + gameBoard;
+                leftEnd = player[PlayerIndex].PlayerDices[index].Num1;
                 player[PlayerIndex].PlayerDices.RemoveAt(index);
             }
             else
             {
                 gameBoard = gameBoard + player[PlayerIndex].PlayerDices[index].DiceStr;
+                rightEnd = player[PlayerIndex].PlayerDices[index].Num2;
                 player[PlayerIndex].PlayerDices.RemoveAt(index);
             }
-           
+            
         }
 
         public int SummScore(int PlayerIndex)
@@ -141,5 +172,63 @@ namespace Domino
             return sum; 
         }
 
+        public bool CheckFish()
+        {
+            bool NoDiceOnPlayers = false;
+            bool NoDiceAtBazar = false;
+            foreach (Player player in player)
+            {
+                foreach(DiceModel dice in player.PlayerDices)
+                {
+                    if( (dice.Num1 == leftEnd || dice.Num2 == leftEnd) || (dice.Num1 == rightEnd || dice.Num2 == rightEnd)) NoDiceOnPlayers = true;
+                }
+            }
+            Console.WriteLine($"NoDiceOnPlayers {NoDiceOnPlayers}");
+            foreach (DiceModel bazarDice in Bazar)
+            {
+                if ((bazarDice.Num1 == leftEnd || bazarDice.Num2 == leftEnd) || (bazarDice.Num1 == rightEnd || bazarDice.Num2 == rightEnd)) NoDiceAtBazar = true;
+            }
+            Console.WriteLine($"NoDiceAtBazar {NoDiceAtBazar}");
+            if(NoDiceAtBazar && NoDiceOnPlayers) 
+            {
+                return true;
+            }
+            else 
+            { 
+                return false; 
+            }
+        }
+
+        /// <summary>
+        /// проверка хода.
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="dice"></param>
+        /// <returns> false если вы не можете так сходить, true если можете</returns>
+        public bool CheckMove(bool left, DiceModel dice)
+        {
+            if (left)
+            {
+                Console.WriteLine($"{dice.Num2},{leftEnd}.");
+                Console.ReadLine();
+                if (dice.Num2 != leftEnd) return false;
+            }
+            else
+            {
+                Console.WriteLine($"{dice.Num1},{rightEnd}.");
+                Console.ReadLine();
+                if (dice.Num1 != rightEnd) return false;
+            }
+            return true;
+        }
+
+        public Player ChackWinner()
+        {
+            foreach (Player winner in player)
+            {
+                if (winner.PlayerDices.Count == 0) return winner;
+            }
+            return null;
+        }
     }
 }

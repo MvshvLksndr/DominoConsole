@@ -8,11 +8,11 @@ internal class Program
     public static Random rnd = new Random();
     public static Engine engine;
     public static int PlayersCount;
-    public static bool HideBazar = false;
+    public static bool HideBazar = true;
 
     public static void Main()
     {
-        Console.WriteLine("Домино козел. \n Команды:\n  start - запустить игру \n  help - помощь по командам \n hidebazar - скрыть/показать базар");
+        Console.WriteLine("Домино козел. \n Команды:\n  start - запустить игру \n  help - помощь по командам \n  hidebazar - показать/скрыть базар");
         while (true)
         {
             string comand = Console.ReadLine();
@@ -105,6 +105,19 @@ internal class Program
         {
             if (turn >= PlayersCount) turn = 0;
 
+            if (engine.CheckFish())
+            {
+                Console.WriteLine("РЫБА");
+                Console.WriteLine("Игра завершена");
+                GetScores();
+            }
+            if(engine.ChackWinner() != null)
+            {
+                Console.WriteLine($"Победил игрок {engine.ChackWinner().Name}!");
+                GetScores();
+            }
+
+
             DrawUI();
             PlayerTurn(turn);
             command = Console.ReadLine();
@@ -126,9 +139,9 @@ internal class Program
     {
         Console.Clear();
         Console.WriteLine($"<--------------->[Игровое поле]<-------------->");
-        Console.WriteLine($"\n|{engine.gameBoard}|\n");
+        Console.WriteLine($"\n |{engine.leftEnd}|{engine.gameBoard}|{engine.rightEnd}|\n");
         Console.WriteLine("<------------------>[Базар]<------------------>\n");
-        if(HideBazar = false)
+        if(HideBazar == false)
         {
             for (int i = 0; i < engine.Bazar.Count; i++) { Console.Write($" {engine.Bazar[i].DiceStr} "); }   //доминошки в базаре
         }
@@ -192,21 +205,48 @@ internal class Program
             case "pass+":
                 Console.WriteLine("Выберите костяшку которой хотите пойти");
                 index = Convert.ToInt32(Console.ReadLine()) - 1;
-                engine.Pass(index, PlayerIndex, false);
+                try
+                {
+                    engine.Pass(index, PlayerIndex, false);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    Console.ReadLine();
+                    Game(PlayerIndex);
+                }
                 Game(PlayerIndex + 1);
                 break;
 
             case "pass":
                 Console.WriteLine("Выберите костяшку которой хотите пойти");
                 index = Convert.ToInt32(Console.ReadLine()) - 1;
-                engine.Pass(index, PlayerIndex, false);
+                try
+                {
+                    engine.Pass(index, PlayerIndex, false);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    Console.ReadLine();
+                    Game(PlayerIndex);
+                }
                 Game(PlayerIndex + 1);
                 break;
 
             case "+pass":
                 Console.WriteLine("Выберите костяшку которой хотите пойти");
                 index = Convert.ToInt32(Console.ReadLine()) - 1;
-                engine.Pass(index, PlayerIndex, true);
+                try
+                {
+                    engine.Pass(index, PlayerIndex, true);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    Console.ReadLine();
+                    Game(PlayerIndex);
+                }
                 Game(PlayerIndex + 1);
                 break;
 
@@ -238,5 +278,19 @@ internal class Program
                 Game(PlayerIndex);
                 break;
         }
+    }
+    
+    public static void GetScores()
+    {
+        Console.WriteLine("Игра завершена");
+        for (int i = 0; i < PlayersCount; i++)
+        {
+            Console.WriteLine($"\nИгрок {engine.player[i].Name} ({i + 1}). Сумма очков: {engine.SummScore(i)}");
+        }
+        Console.WriteLine("\n(enter для продолжения)");
+        Console.ReadLine();
+        Console.Clear();
+        Console.WriteLine("Игра завершена");
+        Main();
     }
 }
