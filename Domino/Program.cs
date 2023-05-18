@@ -111,6 +111,7 @@ internal class Program
                 Console.WriteLine("Игра завершена");
                 GetScores();
             }
+
             if(engine.ChackWinner() != null)
             {
                 Console.WriteLine($"Победил игрок {engine.ChackWinner().Name}!");
@@ -139,7 +140,7 @@ internal class Program
     {
         Console.Clear();
         Console.WriteLine($"<--------------->[Игровое поле]<-------------->");
-        Console.WriteLine($"\n |{engine.leftEnd}|{engine.gameBoard}|{engine.rightEnd}|\n");
+        Console.WriteLine($"\n |>{engine.leftEnd}<|{engine.gameBoard}|>{engine.rightEnd}<|\n");
         Console.WriteLine("<------------------>[Базар]<------------------>\n");
         if(HideBazar == false)
         {

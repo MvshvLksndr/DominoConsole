@@ -174,21 +174,38 @@ namespace Domino
 
         public bool CheckFish()
         {
+            if (firstTime) return false;
             bool NoDiceOnPlayers = false;
             bool NoDiceAtBazar = false;
             foreach (Player player in player)
             {
-                foreach(DiceModel dice in player.PlayerDices)
+                //оно сравнивает все числа со всех костяшек ИГРОКОВ с правым и левым концом поля и возвращает NoDiceOnPlayers = true; если нет совпадений (совсем)
+                if (player.PlayerDices.Any(x => x.Num1 == rightEnd || x.Num1 == leftEnd) || player.PlayerDices.Any(x => x.Num2 == rightEnd || x.Num2 == leftEnd)) 
                 {
-                    if( (dice.Num1 == leftEnd || dice.Num2 == leftEnd) || (dice.Num1 == rightEnd || dice.Num2 == rightEnd)) NoDiceOnPlayers = true;
+                    NoDiceOnPlayers = false;
+                }
+                else
+                {
+                    NoDiceOnPlayers = true;
                 }
             }
             Console.WriteLine($"NoDiceOnPlayers {NoDiceOnPlayers}");
+
+            //оно сравнивает все числа со всех костяшек В БАЗАРЕ с правым и левым концом поля и возвращает NoDiceAtBazar = true; если нет совпадений (совсем)
             foreach (DiceModel bazarDice in Bazar)
             {
-                if ((bazarDice.Num1 == leftEnd || bazarDice.Num2 == leftEnd) || (bazarDice.Num1 == rightEnd || bazarDice.Num2 == rightEnd)) NoDiceAtBazar = true;
+                if ((bazarDice.Num1 == leftEnd || bazarDice.Num2 == leftEnd) || (bazarDice.Num1 == rightEnd || bazarDice.Num2 == rightEnd))
+                {
+                    NoDiceAtBazar = false;
+                }
+                else
+                {
+                    NoDiceAtBazar = true;
+                }
             }
             Console.WriteLine($"NoDiceAtBazar {NoDiceAtBazar}");
+
+            //если в обоих случаях нет совпадений - рыба
             if(NoDiceAtBazar && NoDiceOnPlayers) 
             {
                 return true;
