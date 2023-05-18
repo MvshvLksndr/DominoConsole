@@ -112,12 +112,11 @@ internal class Program
                 GetScores();
             }
 
-            if(engine.ChackWinner() != null)
+            if(engine.ChеckWinner() != null)
             {
-                Console.WriteLine($"Победил игрок {engine.ChackWinner().Name}!");
+                Console.WriteLine($"Победил игрок {engine.ChеckWinner().Name}!");
                 GetScores();
             }
-
 
             DrawUI();
             PlayerTurn(turn);
@@ -140,7 +139,7 @@ internal class Program
     {
         Console.Clear();
         Console.WriteLine($"<--------------->[Игровое поле]<-------------->");
-        Console.WriteLine($"\n |>{engine.leftEnd}<|{engine.gameBoard}|>{engine.rightEnd}<|\n");
+        Console.WriteLine($"\n |>{engine.leftEnd}<|  {engine.gameBoard}  |>{engine.rightEnd}<|\n");
         Console.WriteLine("<------------------>[Базар]<------------------>\n");
         if(HideBazar == false)
         {
@@ -148,7 +147,7 @@ internal class Program
         }
         else
         {
-            for (int i = 0; i < engine.Bazar.Count; i++) { Console.Write($" {engine.Bazar[i].DiceStrHidden} "); }   //доминошки в базаре
+            for (int i = 0; i < engine.Bazar.Count; i++) { Console.Write($" {engine.Bazar[i].DiceStrHidden} "); }   //доминошки в базаре но скрытые
         }
         Console.WriteLine("\n<----------------->[игроки]<------------------>\n");
 
@@ -177,6 +176,14 @@ internal class Program
                 Console.Clear();
                 Console.WriteLine("Игра остановлена.");
                 Main();
+                break;
+
+            case "hidebazar":
+                HideBazar = !HideBazar;
+                Console.WriteLine($"базар спрятан ({HideBazar}) \n(нажмите для продолжения)");
+                Console.ReadLine();
+                Console.Clear();
+                Game(PlayerIndex);
                 break;
 
             case "flip":
@@ -281,6 +288,7 @@ internal class Program
         }
     }
     
+    //конец игры (вроде как)
     public static void GetScores()
     {
         Console.WriteLine("Игра завершена");

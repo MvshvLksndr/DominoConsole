@@ -172,6 +172,10 @@ namespace Domino
             return sum; 
         }
 
+        /// <summary>
+        /// Проверяет рыбу. Вроде работает
+        /// </summary>
+        /// <returns>true если рыба, false если нет</returns>
         public bool CheckFish()
         {
             if (firstTime) return false;
@@ -221,7 +225,7 @@ namespace Domino
         /// </summary>
         /// <param name="left"></param>
         /// <param name="dice"></param>
-        /// <returns> false если вы не можете так сходить, true если можете</returns>
+        /// <returns>false если вы не можете так сходить, true если можете</returns>
         public bool CheckMove(bool left, DiceModel dice)
         {
             if (left)
@@ -238,8 +242,11 @@ namespace Domino
             }
             return true;
         }
-
-        public Player ChackWinner()
+        /// <summary>
+        /// возвращает игрока если нашло победителя
+        /// </summary>
+        /// <returns>Player</returns>
+        public Player ChеckWinner()
         {
             foreach (Player winner in player)
             {
